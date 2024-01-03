@@ -1,0 +1,62 @@
+from icalendar import Calendar, Event
+from datetime import datetime
+
+courses = [
+    {
+        "Course Name": "Logistics, Operations and Risk Management",
+        "Course Code": "FAE1304",
+        "Section": "300",
+        "Delivery": "Theory",
+        "Professor": "Marye Menard-Bos",
+        "Room Number/ Location": "WA150, Woodroffe",
+        "Day of Class": "Monday",
+        "Time": "08:00 until 10:00",
+        "Start Date": "08-Jan-2024",
+        "End Date": "08-Apr-2024",
+        "Academic Penalty Withdrawal Date": "15-Mar-2024",
+    },
+    {
+        "Course Name": "Event Management Strategies",
+        "Course Code": "FAE1342",
+        "Section": "300",
+        "Delivery": "Theory",
+        "Professor": "Sylvia Densmore",
+        "Room Number/ Location": "CA205, Woodroffe",
+        "Day of Class": "Monday",
+        "Time": "11:00 until 13:00",
+        "Start Date": "08-Jan-2024",
+        "End Date": "08-Apr-2024",
+        "Academic Penalty Withdrawal Date": "15-Mar-2024",
+    },
+    # Add more courses in a similar format
+]
+
+icalendar_file = Calendar()
+
+for course in courses:
+    event = Event()
+    event.add('summary', course["Course Name"])
+    event.add('location', course["Room Number/ Location"])
+    
+    # Parse start date and time
+    start_datetime = datetime.strptime(course["Start Date"], "%d-%b-%Y") + timedelta(hours=8)
+    start_time = datetime.strptime(course["Time"].split(" until ")[0], "%H:%M")
+    start_datetime = start_datetime.replace(hour=start_time.hour, minute=start_time.minute)
+    event.add('dtstart', start_datetime)
+    
+    # Parse end date and time
+    end_datetime = datetime.strptime(course["End Date"], "%d-%b-%Y") + timedelta(hours=8)
+    end_time = datetime.strptime(course["Time"].split(" until ")[1], "%H:%M")
+    end_datetime = end_datetime.replace(hour=end_time.hour, minute=end_time.minute)
+    event.add('dtend', end_datetime)
+    
+    # Add academic penalty withdrawal date as a description
+    event.add('description', f"Academic Penalty Withdrawal Date: {course['Academic Penalty Withdrawal Date']}")
+    
+    icalendar_file.add_component(event)
+
+# Save the iCalendar file
+with open("course_schedule.ics", "wb") as f:
+    f.write(icalendar_file.to_ical())
+
+print("iCalendar file 'course_schedule.ics' generated successfully.")
